@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JMI MMF A1 - Unité 6: Partir, Sortir, Dormir</title>
+    <link href="https://fonts.googleapis.com/css2?family=Benguiat+ITC&family=Creepster&family=Roboto+Mono:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --neon-red: #ff0033;
+            --neon-blue: #00f7ff;
+            --dark-bg: #0a0a0a;
+            --retro-gold: #f5ce42;
+            --text-white: #eeeeee;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--text-white);
+        }
+
+        /* CRT/VHS Effects */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        #presentation-container {
+            width: 1280px;
+            height: 720px; /* 16:9 Aspect Ratio */
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
+            position: relative;
+            box-shadow: 0 0 50px rgba(255, 0, 51, 0.2);
+            overflow: hidden;
+            border: 2px solid #333;
+        }
+
+        .watermark {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.3);
+            z-index: 100;
+        }
+
+        /* Typography */
+        h1, h2 {
+            font-family: 'Creepster', cursive; /* Stranger Things vibe fallback */
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--neon-red), 0 0 20px var(--neon-red);
+            color: transparent;
+            -webkit-text-stroke: 1.5px var(--neon-red);
+            margin: 0;
+        }
+        
+        h1 { font-size: 3.5rem; text-align: center; }
+        h2 { font-size: 2.5rem; color: var(--text-white); -webkit-text-stroke: 0; text-shadow: 0 0 10px var(--neon-blue); }
+
+        p, li {
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            gap: 20px;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 10px 20px;
+            font-family: 'Roboto Mono', monospace;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .btn:hover {
+            background: var(--neon-blue);
+            color: #000;
+        }
+
+        /* Slides */
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in-out;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        /* Components */
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 80%;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--neon-blue);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 8px;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            background: rgba(0, 247, 255, 0.1);
+        }
+
+        .flip-card {
+            background-color: transparent;
+            width: 250px;
+            height: 300px;
+            perspective: 1000px;
+            margin: 10px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px 0 rgba(255,0,0,0.2);
+            border: 1px solid var(--neon-red);
+        }
+
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .flip-card-front {
+            background-color: rgba(20, 20, 20, 0.9);
+            color: var(--neon-red);
+        }
+
+        .flip-card-back {
+            background-color: var(--neon-red);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .grammar-table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;
+            border: 1px solid var(--neon-blue);
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .grammar-table th, .grammar-table td {
+            border: 1px solid var(--neon-blue);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .grammar-table th {
+            background-color: rgba(0, 247, 255, 0.2);
+            color: var(--neon-blue);
+        }
+
+        .highlight {
+            color: var(--retro-gold);
+            font-weight: bold;
+        }
+
+        .input-box {
+            background: transparent;
+            border: 1px solid var(--neon-blue);
+            color: white;
+            padding: 10px;
+            font-family: 'Roboto Mono', monospace;
+            width: 60%;
+            margin-top: 10px;
+        }
+
+        /* Quiz Buttons */
+        .quiz-opt {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+            text-align: left;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .quiz-opt:hover {
+            border-color: var(--neon-blue);
+        }
+
+        .correct { background: #006600 !important; border-color: #00ff00 !important; }
+        .incorrect { background: #660000 !important; border-color: #ff0000 !important; animation: shake 0.5s; }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Chat UI */
+        #chat-box {
+            width: 80%;
+            height: 300px;
+            border: 1px solid var(--neon-blue);
+            overflow-y: auto;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(0,0,0,0.5);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+        }
+        .msg { margin: 5px 0; padding: 5px 10px; border-radius: 5px; }
+        .msg.bot { background: rgba(0, 247, 255, 0.2); color: var(--neon-blue); align-self: flex-start; }
+        .msg.user { background: rgba(255, 0, 51, 0.2); color: var(--neon-red); text-align: right; }
+
+        .audio-btn {
+            font-size: 2rem;
+            color: var(--neon-blue);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .audio-btn:active { transform: scale(0.9); }
+        
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: var(--neon-red);
+            transition: width 0.3s;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="scanlines"></div>
+
+<div id="presentation-container">
+    <div class="progress-bar" id="progress"></div>
+    <div class="watermark">JMI MMF A1</div>
+
+    <div class="slide active" id="slide1">
+        <h1>ÉDITO A1 - UNITÉ 6</h1>
+        <h2 style="font-family: 'Roboto Mono'; font-size: 1.5rem; margin-top: 20px;">SÉANCE 4: LES ACTIONS DU QUOTIDIEN</h2>
+        <div style="margin-top: 50px; border: 2px solid var(--neon-blue); padding: 20px; box-shadow: 0 0 20px var(--neon-blue);">
+            <i class="fa-solid fa-person-walking-luggage fa-3x" style="color: var(--neon-red); margin: 0 20px;"></i>
+            <i class="fa-solid fa-door-open fa-3x" style="color: var(--text-white); margin: 0 20px;"></i>
+            <i class="fa-solid fa-bed fa-3x" style="color: var(--neon-blue); margin: 0 20px;"></i>
+        </div>
+        <p style="margin-top: 30px; font-family: 'Roboto Mono'">Grammaire: Partir, Sortir, Dormir</p>
+    </div>
+
+    <div class="slide" id="slide2">
+        <h2><i class="fa-solid fa-bolt"></i> Échauffement</h2>
+        <p>Qu'est-ce que vous faites le matin ? (Cliquez pour révéler)</p>
+        <div class="grid-4">
+            <div class="card" onclick="this.innerHTML='<i class=\'fa-solid fa-bed\'></i><br>Je dors'">Image 1: 😴</div>
+            <div class="card" onclick="this.innerHTML='<i class=\'fa-solid fa-person-running\'></i><br>Je pars'">Image 2: 🏃‍♂️</div>
+            <div class="card" onclick="this.innerHTML='<i class=\'fa-solid fa-mug-hot\'></i><br>Je bois un café'">Image 3: ☕</div>
+            <div class="card" onclick="this.innerHTML='<i class=\'fa-solid fa-shower\'></i><br>Je me douche'">Image 4: 🚿</div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide3">
+        <h2>Vocabulaire 1</h2>
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <i class="fa-solid fa-plane-departure fa-4x"></i>
+                    <h3>PARTIR</h3>
+                </div>
+                <div class="flip-card-back">
+                    <h3>To Leave / To Go</h3>
+                    <p>Je pars en vacances.<br>Il part au travail.</p>
+                    <i class="fa-solid fa-volume-high" onclick="speak('Partir. Je pars en vacances.')"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide4">
+        <h2>Vocabulaire 2</h2>
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <i class="fa-solid fa-users fa-4x"></i>
+                    <h3>SORTIR</h3>
+                </div>
+                <div class="flip-card-back">
+                    <h3>To Go Out / Exit</h3>
+                    <p>Je sors ce soir.<br>Nous sortons avec des amis.</p>
+                    <i class="fa-solid fa-volume-high" onclick="speak('Sortir. Je sors ce soir.')"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide5">
+        <h2>Vocabulaire 3</h2>
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <i class="fa-solid fa-bed fa-4x"></i>
+                    <h3>DORMIR</h3>
+                </div>
+                <div class="flip-card-back">
+                    <h3>To Sleep</h3>
+                    <p>Je dors 8 heures.<br>Tu dors bien ?</p>
+                    <i class="fa-solid fa-volume-high" onclick="speak('Dormir. Je dors 8 heures.')"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide6">
+        <h2>La Grammaire (Les verbes en -IR type 2)</h2>
+        <p>Attention ! Ce ne sont pas des verbes comme "Finir" (finissons).</p>
+        <p>La règle est spéciale pour : <span class="highlight">Partir, Sortir, Dormir</span></p>
+        <div style="display:flex; gap:20px; margin-top:20px;">
+            <div style="border: 1px solid var(--neon-red); padding: 20px;">
+                <h3>Singulier (Je, Tu, Il)</h3>
+                <p>On enlève 3 lettres (-tir / -mir)</p>
+                <p>Je par<span style="color:red">s</span></p>
+            </div>
+            <div style="border: 1px solid var(--neon-blue); padding: 20px;">
+                <h3>Pluriel (Nous, Vous, Ils)</h3>
+                <p>On garde le 'T' ou le 'M'</p>
+                <p>Nous par<span style="color:cyan">t</span>ons</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide7">
+        <h2>PARTIR (To leave)</h2>
+        <i class="fa-solid fa-volume-high audio-btn" onclick="speak('Je pars, Tu pars, Il part, Nous partons, Vous partez, Ils partent')"></i>
+        <table class="grammar-table">
+            <tr><th>Sujet</th><th>Verbe</th></tr>
+            <tr><td>Je</td><td>Par<span class="highlight">s</span></td></tr>
+            <tr><td>Tu</td><td>Par<span class="highlight">s</span></td></tr>
+            <tr><td>Il / Elle / On</td><td>Par<span class="highlight">t</span></td></tr>
+            <tr><td>Nous</td><td>Par<span class="highlight">t</span>ons</td></tr>
+            <tr><td>Vous</td><td>Par<span class="highlight">t</span>ez</td></tr>
+            <tr><td>Ils / Elles</td><td>Par<span class="highlight">t</span>ent</td></tr>
+        </table>
+    </div>
+
+    <div class="slide" id="slide8">
+        <h2>SORTIR (To go out)</h2>
+        <i class="fa-solid fa-volume-high audio-btn" onclick="speak('Je sors, Tu sors, Il sort, Nous sortons, Vous sortez, Ils sortent')"></i>
+        <table class="grammar-table">
+            <tr><th>Sujet</th><th>Verbe</th></tr>
+            <tr><td>Je</td><td>Sor<span class="highlight">s</span></td></tr>
+            <tr><td>Tu</td><td>Sor<span class="highlight">s</span></td></tr>
+            <tr><td>Il / Elle / On</td><td>Sor<span class="highlight">t</span></td></tr>
+            <tr><td>Nous</td><td>Sor<span class="highlight">t</span>ons</td></tr>
+            <tr><td>Vous</td><td>Sor<span class="highlight">t</span>ez</td></tr>
+            <tr><td>Ils / Elles</td><td>Sor<span class="highlight">t</span>ent</td></tr>
+        </table>
+    </div>
+
+    <div class="slide" id="slide9">
+        <h2>DORMIR (To Sleep)</h2>
+        <i class="fa-solid fa-volume-high audio-btn" onclick="speak('Je dors, Tu dors, Il dort, Nous dormons, Vous dormez, Ils dorment')"></i>
+        <table class="grammar-table">
+            <tr><th>Sujet</th><th>Verbe</th></tr>
+            <tr><td>Je</td><td>Dor<span class="highlight">s</span></td></tr>
+            <tr><td>Tu</td><td>Dor<span class="highlight">s</span></td></tr>
+            <tr><td>Il / Elle / On</td><td>Dor<span class="highlight">t</span></td></tr>
+            <tr><td>Nous</td><td>Dor<span class="highlight">m</span>ons</td></tr>
+            <tr><td>Vous</td><td>Dor<span class="highlight">m</span>ez</td></tr>
+            <tr><td>Ils / Elles</td><td>Dor<span class="highlight">m</span>ent</td></tr>
+        </table>
+    </div>
+
+    <div class="slide" id="slide10">
+        <h2>Pratique Guidée</h2>
+        <p>Complétez avec le verbe <strong>PARTIR</strong></p>
+        <div style="font-size: 1.5rem; line-height: 2;">
+            1. Je <input type="text" class="input-box" data-answer="pars" style="width: 100px;"> à Paris.<br>
+            2. Nous <input type="text" class="input-box" data-answer="partons" style="width: 120px;"> en vacances.<br>
+        </div>
+        <button class="btn" style="margin-top: 20px;" onclick="checkInputs(this)">Vérifier</button>
+    </div>
+
+    <div class="slide" id="slide11">
+        <h2>Pratique Guidée</h2>
+        <p>Complétez avec le verbe <strong>SORTIR</strong></p>
+        <div style="font-size: 1.5rem; line-height: 2;">
+            1. Tu <input type="text" class="input-box" data-answer="sors" style="width: 100px;"> ce soir ?<br>
+            2. Elles <input type="text" class="input-box" data-answer="sortent" style="width: 120px;"> du cinéma.<br>
+        </div>
+        <button class="btn" style="margin-top: 20px;" onclick="checkInputs(this)">Vérifier</button>
+    </div>
+
+    <div class="slide" id="slide12">
+        <h2>Pratique Guidée</h2>
+        <p>Complétez avec le verbe <strong>DORMIR</strong></p>
+        <div style="font-size: 1.5rem; line-height: 2;">
+            1. Il <input type="text" class="input-box" data-answer="dort" style="width: 100px;"> beaucoup.<br>
+            2. Vous <input type="text" class="input-box" data-answer="dormez" style="width: 120px;"> ici ?<br>
+        </div>
+        <button class="btn" style="margin-top: 20px;" onclick="checkInputs(this)">Vérifier</button>
+    </div>
+
+    <div class="slide" id="slide13">
+        <h2><i class="fa-solid fa-lightbulb" style="color: var(--retro-gold)"></i> Le Saviez-vous ?</h2>
+        <div style="display: flex; align-items: center; gap: 30px;">
+            <i class="fa-solid fa-clock fa-5x" style="color: var(--neon-blue)"></i>
+            <div>
+                <p>En France, les jeunes <strong>sortent</strong> souvent tard le soir.</p>
+                <p>Mais attention ! Le dimanche, tout est fermé. On <strong>dort</strong> ou on reste en famille.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide14">
+        <h2>🎧 Écoute Active</h2>
+        <p>Dialogue: Lucas et Sarah organisent leur soirée.</p>
+        <div style="display: flex; gap: 50px; margin: 30px;">
+            <div style="text-align: center; opacity: 0.5;" id="avatar-lucas">
+                <i class="fa-solid fa-user-astronaut fa-4x"></i><br>Lucas
+            </div>
+            <div style="text-align: center; opacity: 0.5;" id="avatar-sarah">
+                <i class="fa-solid fa-user-ninja fa-4x"></i><br>Sarah
+            </div>
+        </div>
+        <button class="btn" onclick="playDialogue()"><i class="fa-solid fa-play"></i> Écouter</button>
+        <div id="dialogue-text" style="margin-top:20px; font-style:italic; min-height: 50px;"></div>
+    </div>
+
+    <div class="slide" id="slide15">
+        <h2>Compréhension</h2>
+        <p>Est-ce que Sarah sort ce soir ?</p>
+        <div style="width: 50%;">
+            <button class="quiz-opt" onclick="checkQuiz(this, true)">Oui, elle sort avec Lucas.</button>
+            <button class="quiz-opt" onclick="checkQuiz(this, false)">Non, elle est fatiguée.</button>
+        </div>
+    </div>
+
+    <div class="slide" id="slide16">
+        <h2>Compréhension</h2>
+        <p>Lucas part à quelle heure ?</p>
+        <div style="width: 50%;">
+            <button class="quiz-opt" onclick="checkQuiz(this, false)">Il part à 18h00.</button>
+            <button class="quiz-opt" onclick="checkQuiz(this, true)">Il part à 20h00.</button>
+        </div>
+    </div>
+
+<div class="slide" id="slide17">
+    <h2><i class="fa-solid fa-film"></i> Contexte Vidéo</h2>
+    <p>Vous écrivez une lettre pour proposer une sortie...</p>
+    <div style="width: 60%; height: 200px; background: #222; border: 2px dashed var(--neon-red);">
+        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/Ty6zxVQdEiA?si=hgdNWIEd0nQP0NLu" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <p>Régardez cette vidéo et Pratiquez comment pour <strong>demander</strong> ou  <strong>proposer</strong> une sortie </p>
+</div>
+
+    <div class="slide" id="slide18">
+        <h2>Quiz Rapide</h2>
+        <p>Quelle phrase est correcte ?</p>
+        <div style="width: 50%;">
+            <button class="quiz-opt" onclick="checkQuiz(this, false)">Nous partons à l'école demain.</button>
+            <button class="quiz-opt" onclick="checkQuiz(this, true)">Nous partons en vacances demain.</button>
+            <button class="quiz-opt" onclick="checkQuiz(this, false)">Nous partez maintenant.</button>
+        </div>
+    </div>
+
+    <div class="slide" id="slide19">
+        <h2>Quiz Rapide</h2>
+        <p>Complétez : "Les enfants ______ tôt."</p>
+        <div style="width: 50%;">
+            <button class="quiz-opt" onclick="checkQuiz(this, false)">dort</button>
+            <button class="quiz-opt" onclick="checkQuiz(this, true)">dorment</button>
+            <button class="quiz-opt" onclick="checkQuiz(this, false)">dormons</button>
+        </div>
+    </div>
+
+    <div class="slide" id="slide20">
+        <h2>Quiz Rapide</h2>
+        <p>Translate: "I go out with my friends."</p>
+        <div style="width: 50%;">
+            <button class="quiz-opt" onclick="checkQuiz(this, false)">Je part avec mes amis.</button>
+            <button class="quiz-opt" onclick="checkQuiz(this, true)">Je sors avec mes amis.</button>
+            <button class="quiz-opt" onclick="checkQuiz(this, false)">Je sors avec mon amis.</button>
+        </div>
+    </div>
+
+    <div class="slide" id="slide21">
+        <h2><i class="fa-solid fa-brain"></i> Analyse (HOTS)</h2>
+        <p>Pourquoi on utilise "PARTIR" et pas "SORTIR" ici ?</p>
+        <blockquote style="border-left: 4px solid var(--neon-blue); padding-left: 20px;">
+            "Demain, je <strong>pars</strong> pour l'Italie."
+        </blockquote>
+        <ul style="text-align: left; margin-top: 20px;">
+            <li><strong>Sortir:</strong> To exit a room / To go out socially.</li>
+            <li><strong>Partir:</strong> To leave a place (start a journey) / Destination emphasized.</li>
+        </ul>
+    </div>
+
+    <div class="slide" id="slide22">
+        <h2>Jeu de Rôle avec l'IA</h2>
+        <p>Context: You are talking to a French friend (AI).</p>
+        <p>Topic: Tell them you are going out tonight or leaving for a trip.</p>
+        <p><i class="fa-solid fa-robot fa-3x" style="color: var(--neon-blue)"></i></p>
+        <p>Utilisez: <em>Je pars..., Je sors..., Je dors...</em></p>
+    </div>
+
+    <div class="slide" id="slide23">
+        <h2>Chat avec l'IA</h2>
+        <div id="chat-box">
+            <div class="msg bot">Salut ! Qu'est-ce que tu fais ce soir ?</div>
+        </div>
+        <div style="display: flex; width: 80%; gap: 10px;">
+            <input type="text" id="user-input" class="input-box" style="width: 100%; margin: 0;" placeholder="Répondez ici (ex: Je sors...)">
+            <button class="btn" onclick="handleAIChat()">Envoyer</button>
+        </div>
+        <div style="margin-top: 10px; font-size: 0.8rem; color: #aaa;">
+            *Needs API Key for Gemini, otherwise uses Offline Mode.
+        </div>
+        <input type="password" id="api-key" placeholder="Optional: Gemini API Key" style="background: #333; border: none; color: #555; margin-top: 5px;">
+    </div>
+
+    <div class="slide" id="slide24">
+        <h2>Bonus: Le Passé Récent</h2>
+        <p>Comment dire "I just left"?</p>
+        <h3 class="highlight">Venir de + Infinitif</h3>
+        <p>Je viens de <strong>partir</strong>.</p>
+        <p>Elle vient de <strong>sortir</strong>.</p>
+        <p>Nous venons de <strong>dormir</strong>.</p>
+    </div>
+
+    <div class="slide" id="slide25">
+        <h1>FIN DE SÉANCE</h1>
+        <h2>Bravo !</h2>
+        <p>Devoirs: Write 3 sentences using Partir, Sortir, Dormir.</p>
+        <div style="margin-top: 30px;">
+            <i class="fa-solid fa-star fa-2x" style="color: var(--retro-gold)"></i>
+            <i class="fa-solid fa-star fa-2x" style="color: var(--retro-gold)"></i>
+            <i class="fa-solid fa-star fa-2x" style="color: var(--retro-gold)"></i>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <button class="btn" onclick="prevSlide()">Précédent</button>
+        <button class="btn" onclick="nextSlide()">Suivant</button>
+    </div>
+</div>
+
+<script>
+    let currentSlide = 1;
+    const totalSlides = 25;
+
+    // Navigation
+    function showSlide(n) {
+        document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+        document.getElementById(`slide${n}`).classList.add('active');
+        
+        // Update Progress Bar
+        const progress = (n / totalSlides) * 100;
+        document.getElementById('progress').style.width = `${progress}%`;
+    }
+
+    function nextSlide() {
+        if (currentSlide < totalSlides) {
+            currentSlide++;
+            showSlide(currentSlide);
+        }
+    }
+
+    function prevSlide() {
+        if (currentSlide > 1) {
+            currentSlide--;
+            showSlide(currentSlide);
+        }
+    }
+
+    // TTS Helper
+    function speak(text) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'fr-FR';
+        utterance.rate = 0.8; // Slow for beginners
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // Inputs Checker
+    function checkInputs(btn) {
+        const slide = btn.parentElement;
+        const inputs = slide.querySelectorAll('input');
+        let allCorrect = true;
+
+        inputs.forEach(input => {
+            if (input.value.toLowerCase().trim() === input.dataset.answer) {
+                input.style.borderColor = "#00ff00";
+                input.style.backgroundColor = "rgba(0, 255, 0, 0.1)";
+            } else {
+                input.style.borderColor = "#ff0000";
+                input.style.backgroundColor = "rgba(255, 0, 0, 0.1)";
+                allCorrect = false;
+                // Shake animation
+                input.animate([
+                    { transform: 'translateX(0)' },
+                    { transform: 'translateX(5px)' },
+                    { transform: 'translateX(-5px)' },
+                    { transform: 'translateX(0)' }
+                ], { duration: 300 });
+            }
+        });
+
+        if(allCorrect) {
+            speak("Bravo ! C'est correct.");
+        } else {
+            speak("Essayez encore.");
+        }
+    }
+
+    // Dialogue Logic
+    function playDialogue() {
+        const lucas = document.getElementById('avatar-lucas');
+        const sarah = document.getElementById('avatar-sarah');
+        const textDisplay = document.getElementById('dialogue-text');
+
+        const script = [
+            { role: 'Lucas', text: "Salut Sarah ! Tu sors ce soir ?", gender: 'male' },
+            { role: 'Sarah', text: "Oui, je sors avec des amis au restaurant.", gender: 'female' },
+            { role: 'Lucas', text: "Super ! Moi, je pars à Lyon à 20 heures.", gender: 'male' },
+            { role: 'Sarah', text: "D'accord. Alors, bonne route !", gender: 'female' }
+        ];
+
+        let i = 0;
+
+        function playNext() {
+            if (i < script.length) {
+                const line = script[i];
+                textDisplay.innerText = `${line.role}: ${line.text}`;
+                
+                // Visual Highlight
+                if(line.role === 'Lucas') {
+                    lucas.style.opacity = 1;
+                    lucas.style.transform = "scale(1.1)";
+                    sarah.style.opacity = 0.5;
+                    sarah.style.transform = "scale(1)";
+                } else {
+                    sarah.style.opacity = 1;
+                    sarah.style.transform = "scale(1.1)";
+                    lucas.style.opacity = 0.5;
+                    lucas.style.transform = "scale(1)";
+                }
+
+                const utt = new SpeechSynthesisUtterance(line.text);
+                utt.lang = 'fr-FR';
+                utt.rate = 0.8;
+                
+                // Basic attempt to change voice gender (browser dependent)
+                const voices = window.speechSynthesis.getVoices();
+                if(line.gender === 'female') {
+                    const femaleVoice = voices.find(v => v.lang.includes('fr') && v.name.includes('Google') && v.name.includes('Female')) || voices.find(v => v.lang.includes('fr'));
+                    if(femaleVoice) utt.voice = femaleVoice;
+                } else {
+                     const maleVoice = voices.find(v => v.lang.includes('fr') && v.name.includes('Google') && !v.name.includes('Female')) || voices.find(v => v.lang.includes('fr'));
+                     if(maleVoice) utt.voice = maleVoice;
+                }
+
+                utt.onend = () => {
+                    i++;
+                    setTimeout(playNext, 500);
+                };
+                window.speechSynthesis.speak(utt);
+            } else {
+                lucas.style.opacity = 0.5;
+                sarah.style.opacity = 0.5;
+                lucas.style.transform = "scale(1)";
+                sarah.style.transform = "scale(1)";
+            }
+        }
+        playNext();
+    }
+
+    // Quiz Logic
+    function checkQuiz(btn, isCorrect) {
+        if (isCorrect) {
+            btn.classList.add('correct');
+            speak("C'est exact !");
+        } else {
+            btn.classList.add('incorrect');
+            speak("Non, ce n'est pas ça.");
+            setTimeout(() => btn.classList.remove('incorrect'), 1000);
+        }
+    }
+
+    // AI Chat Logic (Mock + Gemini Integration)
+    async function handleAIChat() {
+        const input = document.getElementById('user-input');
+        const chatBox = document.getElementById('chat-box');
+        const apiKey = document.getElementById('api-key').value;
+        const message = input.value;
+
+        if (!message) return;
+
+        // User Message
+        chatBox.innerHTML += `<div class="msg user">${message}</div>`;
+        input.value = '';
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        let responseText = "";
+
+        if (apiKey) {
+            // Real Gemini Call
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `You are a French friend. You only speak simple French (Level A1). Reply to: "${message}". Keep it short.`
+                            }]
+                        }]
+                    })
+                });
+                const data = await response.json();
+                responseText = data.candidates[0].content.parts[0].text;
+            } catch (e) {
+                responseText = "Erreur de connexion (API).";
+            }
+        } else {
+            // Offline Fallback Logic (Regex)
+            const lowerMsg = message.toLowerCase();
+            if (lowerMsg.includes('sors') || lowerMsg.includes('sortir')) {
+                responseText = "C'est super ! Tu vas où ? Au cinéma ou au restaurant ?";
+            } else if (lowerMsg.includes('pars') || lowerMsg.includes('partir')) {
+                responseText = "Bon voyage ! Tu pars en vacances ?";
+            } else if (lowerMsg.includes('dors') || lowerMsg.includes('dormir')) {
+                responseText = "Tu es fatigué ? Bonne nuit alors !";
+            } else if (lowerMsg.includes('bonjour') || lowerMsg.includes('salut')) {
+                responseText = "Salut ! Tu fais quoi ce soir ?";
+            } else {
+                responseText = "Ah bon ? C'est intéressant. Et tu sors ce soir ?";
+            }
+        }
+
+        // Bot Message
+        setTimeout(() => {
+            chatBox.innerHTML += `<div class="msg bot">${responseText}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+            speak(responseText);
+        }, 1000);
+    }
+
+    // Init
+    showSlide(1);
+</script>
+
+</body>
+</html>
